@@ -2,57 +2,129 @@
 <html>
 <head>
 <title>Kuya Pao Payables Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body{
-font-family: Arial;
-background:#f4f6f8;
-padding:40px;
+font-family: Arial, sans-serif;
+background:#eef2f7;
+padding:32px;
+margin:0;
+color:#1f2d3d;
+}
+
+.container{
+max-width:1200px;
+margin:0 auto;
+background:white;
+padding:32px;
+border-radius:16px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
 h1{
-color:#2c3e50;
+color:#243b53;
+margin:0 0 24px 0;
+font-size:24px;
+}
+
+.table-wrap{
+overflow-x:auto;
 }
 
 table{
 border-collapse: collapse;
-width:70%;
+width:100%;
 background:white;
 margin-top:10px;
 }
 
 th, td{
-border:1px solid #ccc;
-padding:10px;
+border:1px solid #d7dde5;
+padding:14px 12px;
 text-align:center;
+font-size:15px;
 }
 
 th{
-background:#34495e;
+background:#334e68;
 color:white;
+font-weight:bold;
+}
+
+tbody tr:nth-child(even){
+background:#f8fafc;
+}
+
+tbody tr:hover{
+background:#f1f5f9;
 }
 
 tfoot{
 font-weight:bold;
-background:#ecf0f1;
+background:#e9eef3;
+}
+
+tfoot td{
+font-size:16px;
+}
+
+.label-cell{
+text-align:center;
+font-weight:bold;
+}
+
+.summary-row td{
+background:#dfe7ef;
+}
+
+.note{
+margin-top:14px;
+font-size:13px;
+color:#52667a;
+}
+
+@media (max-width: 768px){
+body{
+padding:16px;
+}
+.container{
+padding:18px;
+}
+h1{
+font-size:20px;
+}
+th, td{
+padding:10px 8px;
+font-size:14px;
+}
 }
 </style>
 </head>
 
 <body>
 
+<div class="container">
 <h1>Kuya Pao – Payables and Deposits</h1>
 
+<div class="table-wrap">
 <table id="trackerTable">
+<thead>
 <tr>
 <th>Payables</th>
 <th>Amount</th>
 <th>Deposit Date</th>
 <th>Deposit</th>
 </tr>
+</thead>
+<tbody></tbody>
+<tfoot></tfoot>
 </table>
+</div>
+
+<div class="note">Update only the payables and deposits arrays inside the code when needed. Totals and remaining balance calculate automatically.</div>
+</div>
 
 <script>
-
 let payables = [
 {name:"iPhone", amount:30000},
 {name:"Singapore", amount:55000},
@@ -73,13 +145,12 @@ let deposits = [
 {date:"11/28/2025", amount:5000},
 {date:"12/12/2025", amount:5000},
 {date:"1/27/2026", amount:25000},
-{date:"2/27/2026", amount:10000},
-{date:"3/10/2026", amount:5000}
+{date:"2/27/2026", amount:10000}
 ];
 
 function render(){
-
-let table = document.getElementById("trackerTable");
+let tbody = document.querySelector("#trackerTable tbody");
+let tfoot = document.querySelector("#trackerTable tfoot");
 
 let totalPayables = payables.reduce((sum, item) => sum + Number(item.amount), 0);
 let totalDeposits = deposits.reduce((sum, item) => sum + Number(item.amount), 0);
@@ -88,13 +159,12 @@ let remainingBalance = totalPayables - totalDeposits;
 let maxRows = Math.max(payables.length, deposits.length);
 
 for(let i = 0; i < maxRows; i++){
-
 let payableName = payables[i] ? payables[i].name : "";
 let payableAmount = payables[i] ? Number(payables[i].amount).toLocaleString() : "";
 let depositDate = deposits[i] ? deposits[i].date : "";
 let depositAmount = deposits[i] ? Number(deposits[i].amount).toLocaleString() : "";
 
-table.innerHTML += `
+tbody.innerHTML += `
 <tr>
 <td>${payableName}</td>
 <td>${payableAmount}</td>
@@ -102,30 +172,24 @@ table.innerHTML += `
 <td>${depositAmount}</td>
 </tr>
 `;
-
 }
 
-table.innerHTML += `
-<tfoot>
+tfoot.innerHTML = `
 <tr>
-<td>Total Payables</td>
+<td class="label-cell">Total Payables</td>
 <td>${totalPayables.toLocaleString()}</td>
-<td>Total Deposits</td>
+<td class="label-cell">Total Deposits</td>
 <td>${totalDeposits.toLocaleString()}</td>
 </tr>
-<tr>
-<td colspan="3">Remaining Balance</td>
+<tr class="summary-row">
+<td colspan="3" class="label-cell">Remaining Balance</td>
 <td>${remainingBalance.toLocaleString()}</td>
 </tr>
-</tfoot>
 `;
-
 }
 
 render();
-
 </script>
 
 </body>
 </html>
-
