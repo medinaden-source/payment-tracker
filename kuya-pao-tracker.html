@@ -29,13 +29,13 @@ font-size:24px;
 
 .table-wrap{
 overflow-x:auto;
+margin-bottom:24px;
 }
 
 table{
 border-collapse: collapse;
 width:100%;
 background:white;
-margin-top:10px;
 }
 
 th, td{
@@ -59,28 +59,43 @@ tbody tr:hover{
 background:#f1f5f9;
 }
 
-tfoot{
-font-weight:bold;
-background:#e9eef3;
+.summary-grid{
+display:grid;
+grid-template-columns:repeat(3, 1fr);
+gap:16px;
+margin-top:8px;
 }
 
-tfoot td{
-font-size:16px;
-}
-
-.label-cell{
+.summary-card{
+background:#f8fbff;
+border:1px solid #d7dde5;
+border-radius:14px;
+padding:18px;
 text-align:center;
-font-weight:bold;
+box-shadow:0 4px 12px rgba(0,0,0,0.04);
 }
 
-.summary-row td{
-background:#dfe7ef;
-}
-
-.note{
-margin-top:14px;
+.summary-label{
 font-size:13px;
 color:#52667a;
+margin-bottom:8px;
+font-weight:bold;
+letter-spacing:0.2px;
+}
+
+.summary-value{
+font-size:28px;
+font-weight:bold;
+color:#243b53;
+}
+
+.remaining-card{
+background:#eef6ff;
+border:1px solid #bcd2ea;
+}
+
+.remaining-card .summary-value{
+color:#102a43;
 }
 
 @media (max-width: 768px){
@@ -96,6 +111,12 @@ font-size:20px;
 th, td{
 padding:10px 8px;
 font-size:14px;
+}
+.summary-grid{
+grid-template-columns:1fr;
+}
+.summary-value{
+font-size:24px;
 }
 }
 </style>
@@ -117,10 +138,24 @@ font-size:14px;
 </tr>
 </thead>
 <tbody></tbody>
-<tfoot></tfoot>
 </table>
 </div>
 
+<div class="summary-grid">
+<div class="summary-card">
+<div class="summary-label">Total Payables</div>
+<div class="summary-value" id="totalPayables"></div>
+</div>
+<div class="summary-card">
+<div class="summary-label">Total Deposits</div>
+<div class="summary-value" id="totalDeposits"></div>
+</div>
+<div class="summary-card remaining-card">
+<div class="summary-label">Remaining Balance</div>
+<div class="summary-value" id="remainingBalance"></div>
+</div>
+</div>
+</div>
 
 <script>
 let payables = [
@@ -148,7 +183,6 @@ let deposits = [
 
 function render(){
 let tbody = document.querySelector("#trackerTable tbody");
-let tfoot = document.querySelector("#trackerTable tfoot");
 
 let totalPayables = payables.reduce((sum, item) => sum + Number(item.amount), 0);
 let totalDeposits = deposits.reduce((sum, item) => sum + Number(item.amount), 0);
@@ -172,18 +206,9 @@ tbody.innerHTML += `
 `;
 }
 
-tfoot.innerHTML = `
-<tr>
-<td class="label-cell">Total Payables</td>
-<td>${totalPayables.toLocaleString()}</td>
-<td class="label-cell">Total Deposits</td>
-<td>${totalDeposits.toLocaleString()}</td>
-</tr>
-<tr class="summary-row">
-<td colspan="3" class="label-cell">Remaining Balance</td>
-<td>${remainingBalance.toLocaleString()}</td>
-</tr>
-`;
+document.getElementById("totalPayables").textContent = totalPayables.toLocaleString();
+document.getElementById("totalDeposits").textContent = totalDeposits.toLocaleString();
+document.getElementById("remainingBalance").textContent = remainingBalance.toLocaleString();
 }
 
 render();
@@ -191,4 +216,3 @@ render();
 
 </body>
 </html>
-
