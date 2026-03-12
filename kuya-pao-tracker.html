@@ -2,7 +2,6 @@
 <html>
 <head>
 <title>Kuya Pao Payables Tracker</title>
-
 <style>
 body{
 font-family: Arial;
@@ -18,6 +17,7 @@ table{
 border-collapse: collapse;
 width:70%;
 background:white;
+margin-top:10px;
 }
 
 th, td{
@@ -36,48 +36,94 @@ font-weight:bold;
 background:#ecf0f1;
 }
 </style>
-
 </head>
 
 <body>
 
 <h1>Kuya Pao – Payables and Deposits</h1>
 
-<table>
-
+<table id="trackerTable">
 <tr>
 <th>Payables</th>
 <th>Amount</th>
 <th>Deposit Date</th>
 <th>Deposit</th>
 </tr>
+</table>
 
-<tr><td>iPhone</td><td>30,000</td><td>2/8/2025</td><td>5,000</td></tr>
-<tr><td>Singapore</td><td>55,000</td><td>7/4/2025</td><td>5,000</td></tr>
-<tr><td>Apple</td><td>30,000</td><td>7/8/2025</td><td>5,000</td></tr>
-<tr><td>Airfare</td><td>30,000</td><td>9/5/2025</td><td>5,000</td></tr>
-<tr><td>Hotel</td><td>30,000</td><td>11/12/2025</td><td>5,000</td></tr>
-<tr><td>Disney</td><td>14,000</td><td>11/25/2025</td><td>25,000</td></tr>
-<tr><td>Hong Kong</td><td>35,000</td><td>11/28/2025</td><td>5,000</td></tr>
-<tr><td></td><td></td><td>12/12/2025</td><td>5,000</td></tr>
-<tr><td></td><td></td><td>1/27/2026</td><td>25,000</td></tr>
-<tr><td></td><td></td><td>2/27/2026</td><td>10,000</td></tr>
+<script>
 
+let payables = [
+{name:"iPhone", amount:30000},
+{name:"Singapore", amount:55000},
+{name:"Apple", amount:30000},
+{name:"Airfare", amount:30000},
+{name:"Hotel", amount:30000},
+{name:"Disney", amount:14000},
+{name:"Hong Kong", amount:35000}
+];
+
+let deposits = [
+{date:"2/8/2025", amount:5000},
+{date:"7/4/2025", amount:5000},
+{date:"7/8/2025", amount:5000},
+{date:"9/5/2025", amount:5000},
+{date:"11/12/2025", amount:5000},
+{date:"11/25/2025", amount:25000},
+{date:"11/28/2025", amount:5000},
+{date:"12/12/2025", amount:5000},
+{date:"1/27/2026", amount:25000},
+{date:"2/27/2026", amount:10000}
+];
+
+function render(){
+
+let table = document.getElementById("trackerTable");
+
+let totalPayables = payables.reduce((sum, item) => sum + Number(item.amount), 0);
+let totalDeposits = deposits.reduce((sum, item) => sum + Number(item.amount), 0);
+let remainingBalance = totalPayables - totalDeposits;
+
+let maxRows = Math.max(payables.length, deposits.length);
+
+for(let i = 0; i < maxRows; i++){
+
+let payableName = payables[i] ? payables[i].name : "";
+let payableAmount = payables[i] ? Number(payables[i].amount).toLocaleString() : "";
+let depositDate = deposits[i] ? deposits[i].date : "";
+let depositAmount = deposits[i] ? Number(deposits[i].amount).toLocaleString() : "";
+
+table.innerHTML += `
+<tr>
+<td>${payableName}</td>
+<td>${payableAmount}</td>
+<td>${depositDate}</td>
+<td>${depositAmount}</td>
+</tr>
+`;
+
+}
+
+table.innerHTML += `
 <tfoot>
 <tr>
 <td>Total Payables</td>
-<td>224,000</td>
+<td>${totalPayables.toLocaleString()}</td>
 <td>Total Deposits</td>
-<td>95,000</td>
+<td>${totalDeposits.toLocaleString()}</td>
 </tr>
-
 <tr>
 <td colspan="3">Remaining Balance</td>
-<td>129,000</td>
+<td>${remainingBalance.toLocaleString()}</td>
 </tr>
 </tfoot>
+`;
 
-</table>
+}
+
+render();
+
+</script>
 
 </body>
 </html>
