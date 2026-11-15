@@ -1,219 +1,202 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Kuya Pao Payables Tracker</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kuya Pao – Payables and Deposits</title>
 <style>
-body{
-font-family: Arial, sans-serif;
-background:#eef2f7;
-padding:32px;
-margin:0;
-color:#1f2d3d;
-}
-
-.container{
-max-width:1200px;
-margin:0 auto;
-background:white;
-padding:32px;
-border-radius:16px;
-box-shadow:0 10px 30px rgba(0,0,0,0.08);
-}
-
-h1{
-color:#243b53;
-margin:0 0 24px 0;
-font-size:24px;
-}
-
-.table-wrap{
-overflow-x:auto;
-margin-bottom:24px;
-}
-
-table{
-border-collapse: collapse;
-width:100%;
-background:white;
-}
-
-th, td{
-border:1px solid #d7dde5;
-padding:14px 12px;
-text-align:center;
-font-size:15px;
-}
-
-th{
-background:#334e68;
-color:white;
-font-weight:bold;
-}
-
-tbody tr:nth-child(even){
-background:#f8fafc;
-}
-
-tbody tr:hover{
-background:#f1f5f9;
-}
-
-.summary-grid{
-display:grid;
-grid-template-columns:repeat(3, 1fr);
-gap:16px;
-margin-top:8px;
-}
-
-.summary-card{
-background:#f8fbff;
-border:1px solid #d7dde5;
-border-radius:14px;
-padding:18px;
-text-align:center;
-box-shadow:0 4px 12px rgba(0,0,0,0.04);
-}
-
-.summary-label{
-font-size:13px;
-color:#52667a;
-margin-bottom:8px;
-font-weight:bold;
-letter-spacing:0.2px;
-}
-
-.summary-value{
-font-size:28px;
-font-weight:bold;
-color:#243b53;
-}
-
-.remaining-card{
-background:#eef6ff;
-border:1px solid #bcd2ea;
-}
-
-.remaining-card .summary-value{
-color:#102a43;
-}
-
-@media (max-width: 768px){
-body{
-padding:16px;
-}
-.container{
-padding:18px;
-}
-h1{
-font-size:20px;
-}
-th, td{
-padding:10px 8px;
-font-size:14px;
-}
-.summary-grid{
-grid-template-columns:1fr;
-}
-.summary-value{
-font-size:24px;
-}
-}
+:root{--bg1:#eef2ff;--bg2:#f8fafc;--card:#fff;--ink:#0f172a;--muted:#64748b;--line:#e8edf5;--brand:#4f46e5;--good:#059669;--goodbg:#ecfdf5;--warn:#e11d48}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:28px 14px 48px;color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2) 55%);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto}
+.eyebrow{text-align:center;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--brand);font-weight:700;margin-bottom:6px}
+h1{margin:0 0 22px;text-align:center;font-size:clamp(1.4rem,4.5vw,2rem);letter-spacing:-.02em}
+.hero{background:var(--card);border-radius:22px;padding:26px;display:flex;align-items:center;justify-content:space-between;gap:20px;box-shadow:0 10px 40px rgba(79,70,229,.10);margin-bottom:14px}
+.hero small{display:block;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.big{font-size:clamp(2rem,8vw,3rem);font-weight:800;letter-spacing:-.03em;color:var(--warn);line-height:1}
+.hero .sub{margin-top:10px;color:var(--muted);font-size:.9rem}
+.ring{position:relative;width:128px;height:128px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring .track{stroke:var(--line)}
+.ring .fill{stroke:var(--good);transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1)}
+.ring .label{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-weight:800;font-size:1.5rem}
+.ring .label span{display:block;font-size:.65rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.stat{background:var(--card);border-radius:16px;padding:16px 18px;box-shadow:0 2px 12px rgba(15,23,42,.05)}
+.stat small{display:block;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.stat b{font-size:1.25rem;letter-spacing:-.01em}
+.stat.good b{color:var(--good)}
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.panel{background:var(--card);border-radius:18px;padding:8px 8px 4px;box-shadow:0 2px 12px rgba(15,23,42,.05);overflow:hidden}
+.panel.full{grid-column:1/-1}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;padding:12px 14px;border-bottom:1px solid var(--line)}
+td{padding:12px 14px;border-bottom:1px solid var(--line);font-size:.95rem}
+tbody tr:last-child td{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+th.num{text-align:right}
+tbody tr:hover{background:#f8faff}
+tfoot td{font-weight:800;background:#f8faff;border-top:2px solid var(--line);border-bottom:0}
+.amt-good{color:var(--good);font-weight:600}
+.tag{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:99px;background:var(--goodbg);color:var(--good);font-size:.65rem;font-weight:700;letter-spacing:.04em;vertical-align:middle}
+.start td{color:var(--muted)}
+.foot{text-align:center;color:var(--muted);font-size:.8rem;margin-top:18px}
+@media(max-width:680px){.panels{grid-template-columns:1fr}.hero{padding:20px}.ring{width:104px;height:104px}.ring svg{width:104px;height:104px}.ring .label{font-size:1.2rem}}
 </style>
 </head>
-
 <body>
 
-<div class="container">
-<h1>Kuya Pao – Payables and Deposits</h1>
+<!--
+=====================================================================
+  HOW TO UPDATE
+  EASIEST (automatic): paste your Google Sheet link inside the quotes
+  of SHEET_URL below, one time. After that, just add a new row
+  (Date, Amount) in the Google Sheet. No need to open GitHub again.
 
-<div class="table-wrap">
-<table id="trackerTable">
-<thead>
-<tr>
-<th>Payables</th>
-<th>Amount</th>
-<th>Deposit Date</th>
-<th>Deposit</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
-</div>
+  WITHOUT A GOOGLE SHEET: leave SHEET_URL empty and add a line like
+  ["3/10/2026", 5000],  at the end of the DEPOSITS list, then click
+  Commit changes.
+=====================================================================
+-->
+<script>
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRGrkNa4oDu6_9hyn8hLU99Hsm-0pNVW2d8heqKAaYxusYHyXYZKaIXiCkAmC_qAwBRb1OONhb_VGQJ/pub?gid=0&single=true&output=csv";
 
-<div class="summary-grid">
-<div class="summary-card">
-<div class="summary-label">Total Payables</div>
-<div class="summary-value" id="totalPayables"></div>
-</div>
-<div class="summary-card">
-<div class="summary-label">Total Deposits</div>
-<div class="summary-value" id="totalDeposits"></div>
-</div>
-<div class="summary-card remaining-card">
-<div class="summary-label">Remaining Balance</div>
-<div class="summary-value" id="remainingBalance"></div>
-</div>
-</div>
+const PAYABLES = [
+  ["iPhone",     30000],
+  ["Singapore",  55000],
+  ["Apple",      30000],
+  ["Airfare",    30000],
+  ["Hotel",      30000],
+  ["Disney",     14000],
+  ["Hong Kong",  35000],
+];
+
+const DEPOSITS = [
+  ["2/8/2025",    5000],
+  ["7/4/2025",    5000],
+  ["7/8/2025",    5000],
+  ["9/5/2025",    5000],
+  ["11/12/2025",  5000],
+  ["11/25/2025", 25000],
+  ["11/28/2025",  5000],
+  ["12/12/2025",  5000],
+  ["1/27/2026",  25000],
+  ["2/27/2026",  10000],
+];
+</script>
+<!-- ===================== END OF EDITABLE PART ===================== -->
+
+<div class="wrap">
+  <div class="eyebrow">Payment Tracker</div>
+  <h1>Kuya Pao – Payables and Deposits</h1>
+
+  <div class="hero">
+    <div>
+      <small>Remaining Balance</small>
+      <div class="big" id="rb">—</div>
+      <div class="sub" id="latest"></div>
+    </div>
+    <div class="ring"><svg width="128" height="128" viewBox="0 0 128 128"><circle class="track" cx="64" cy="64" r="52" fill="none" stroke-width="12"/><circle id="ringfill" class="fill" cx="64" cy="64" r="52" fill="none" stroke-width="12" stroke-linecap="round"/></svg><div class="label"><div id="pct">0%<span>paid</span></div></div></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><small>Total Payables</small><b id="tp">—</b></div>
+    <div class="stat good"><small>Total Deposits</small><b id="td">—</b></div>
+    <div class="stat"><small>Deposits Made</small><b id="cnt">—</b></div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <table>
+        <thead><tr><th>Payables</th><th class="num">Amount</th></tr></thead>
+        <tbody id="prows"></tbody>
+        <tfoot><tr><td>Total</td><td class="num" id="f1"></td></tr></tfoot>
+      </table>
+    </div>
+    <div class="panel">
+      <table>
+        <thead><tr><th>Deposit Date</th><th class="num">Deposit</th></tr></thead>
+        <tbody id="drows"></tbody>
+        <tfoot><tr><td>Total</td><td class="num" id="f2"></td></tr></tfoot>
+      </table>
+    </div>
+  </div>
+  <div class="foot" id="upd"></div>
 </div>
 
 <script>
-let payables = [
-{name:"iPhone", amount:30000},
-{name:"Singapore", amount:55000},
-{name:"Apple", amount:30000},
-{name:"Airfare", amount:30000},
-{name:"Hotel", amount:30000},
-{name:"Disney", amount:14000},
-{name:"Hong Kong", amount:35000}
-];
-
-let deposits = [
-{date:"2/8/2025", amount:5000},
-{date:"7/4/2025", amount:5000},
-{date:"7/8/2025", amount:5000},
-{date:"9/5/2025", amount:5000},
-{date:"11/12/2025", amount:5000},
-{date:"11/25/2025", amount:25000},
-{date:"11/28/2025", amount:5000},
-{date:"12/12/2025", amount:5000},
-{date:"1/27/2026", amount:25000},
-{date:"2/27/2026", amount:10000},
-{date:"3/27/2026", amount:10000}
-];
-
-function render(){
-let tbody = document.querySelector("#trackerTable tbody");
-
-let totalPayables = payables.reduce((sum, item) => sum + Number(item.amount), 0);
-let totalDeposits = deposits.reduce((sum, item) => sum + Number(item.amount), 0);
-let remainingBalance = totalPayables - totalDeposits;
-
-let maxRows = Math.max(payables.length, deposits.length);
-
-for(let i = 0; i < maxRows; i++){
-let payableName = payables[i] ? payables[i].name : "";
-let payableAmount = payables[i] ? Number(payables[i].amount).toLocaleString() : "";
-let depositDate = deposits[i] ? deposits[i].date : "";
-let depositAmount = deposits[i] ? Number(deposits[i].amount).toLocaleString() : "";
-
-tbody.innerHTML += `
-<tr>
-<td>${payableName}</td>
-<td>${payableAmount}</td>
-<td>${depositDate}</td>
-<td>${depositAmount}</td>
-</tr>
-`;
+/* shared helpers (inlined into each page) */
+const peso = n => "₱" + Math.round(n).toLocaleString("en-US");
+const parseDate = s => {
+  s = String(s).trim();
+  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[1]-1, +m[2]);
+  m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return new Date(+m[1], +m[2]-1, +m[3]);
+  return null;
+};
+const fmtDate = d => (d.getMonth()+1) + "/" + d.getDate() + "/" + d.getFullYear();
+const fmtLong = d => d.toLocaleDateString("en-US", {month:"short", day:"numeric", year:"numeric"});
+function parseCSV(text){
+  const rows = []; let row = [], cur = "", q = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (q){ if (c === '"'){ if (text[i+1] === '"'){ cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === ","){ row.push(cur); cur = ""; }
+    else if (c === "\n" || c === "\r"){ if (c === "\r" && text[i+1] === "\n") i++; row.push(cur); rows.push(row); row = []; cur = ""; }
+    else cur += c;
+  }
+  if (cur || row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}
+/* returns [[Date, amount], ...] sorted by date; ignores header/blank rows */
+function entriesFromCSV(text){
+  return parseCSV(text).map(r => [parseDate(r[0] || ""), parseFloat(String(r[1] || "").replace(/[^0-9.\-]/g, ""))])
+    .filter(r => r[0] && !isNaN(r[1])).sort((a,b) => a[0] - b[0]);
+}
+function entriesFromList(list){
+  return list.map(r => [parseDate(r[0]), r[1]]).filter(r => r[0]).sort((a,b) => a[0] - b[0]);
+}
+async function loadEntries(sheetUrl, fallbackList){
+  if (sheetUrl){
+    try{
+      const res = await fetch(sheetUrl + (sheetUrl.includes("?") ? "&" : "?") + "t=" + Date.now(), {cache:"no-store"});
+      if (!res.ok) throw new Error(res.status);
+      const e = entriesFromCSV(await res.text());
+      if (e.length) return {entries:e, live:true};
+    }catch(err){ /* fall back to the saved list below */ }
+  }
+  return {entries: entriesFromList(fallbackList), live:false};
+}
+function setRing(pct){
+  const c = document.getElementById("ringfill"), len = 2*Math.PI*52;
+  c.style.strokeDasharray = len;
+  c.style.strokeDashoffset = len;
+  requestAnimationFrame(() => requestAnimationFrame(() => c.style.strokeDashoffset = len * (1 - pct/100)));
 }
 
-document.getElementById("totalPayables").textContent = totalPayables.toLocaleString();
-document.getElementById("totalDeposits").textContent = totalDeposits.toLocaleString();
-document.getElementById("remainingBalance").textContent = remainingBalance.toLocaleString();
-}
+const sum = l => l.reduce((s, r) => s + r[1], 0);
+const totalP = sum(PAYABLES);
+document.getElementById("tp").textContent = peso(totalP);
+document.getElementById("f1").textContent = peso(totalP);
+document.getElementById("prows").innerHTML = PAYABLES.map(p => `<tr><td>${p[0]}</td><td class="num">${peso(p[1])}</td></tr>`).join("");
 
-render();
+loadEntries(SHEET_URL, DEPOSITS).then(({entries, live}) => {
+  const totalD = sum(entries), remaining = totalP - totalD;
+  const pct = Math.max(0, Math.min(100, Math.round(totalD / totalP * 1000) / 10));
+  const last = entries[entries.length - 1];
+  document.getElementById("rb").textContent = peso(remaining);
+  document.getElementById("td").textContent = peso(totalD);
+  document.getElementById("f2").textContent = peso(totalD);
+  document.getElementById("cnt").textContent = entries.length;
+  document.getElementById("pct").innerHTML = pct + "%<span>paid</span>";
+  document.getElementById("latest").textContent = last ? "Latest deposit: " + peso(last[1]) + " on " + fmtLong(last[0]) : "";
+  document.getElementById("upd").textContent = last ? "Last updated: " + fmtLong(last[0]) : "";
+  document.getElementById("drows").innerHTML = entries.map((e, i) =>
+    `<tr><td>${fmtDate(e[0])}${i === entries.length - 1 ? '<span class="tag">LATEST</span>' : ''}</td><td class="num amt-good">${peso(e[1])}</td></tr>`).join("");
+  setRing(pct);
+});
 </script>
-
 </body>
 </html>
